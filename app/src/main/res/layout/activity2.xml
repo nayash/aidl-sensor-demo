@@ -17,15 +17,4 @@
         app:layout_constraintTop_toTopOf="parent"
         android:textSize="20sp"/>
 
-    <Button
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_sensor_readings"
-        android:layout_marginTop="50dp"
-        app:layout_constraintWidth_percent="0.3"
-        android:text="New Client"
-        android:onClick="goToNewClient"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

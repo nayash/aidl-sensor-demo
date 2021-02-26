@@ -18,13 +18,14 @@ import com.outliers.aidlserversdk.aidls.ISensorServer;
 import com.outliers.aidlserversdk.aidls.ISensorServerCallback;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SensorService extends Service {
 
     Sensor rotationSensor;
     SensorListener sensorListener;
     private float[] sensorReadings;
-    ArrayList<ISensorServerCallback> clientCallbacks;
+    HashMap<String, ISensorServerCallback> clientCallbacks;
 
     @Override
     public void onCreate() {
@@ -37,7 +38,7 @@ public class SensorService extends Service {
         sensorListener = new SensorListener();
         sensorManager.registerListener(sensorListener, rotationSensor,
                 8000);
-        clientCallbacks = new ArrayList<>();
+        clientCallbacks = new HashMap<>();
     }
 
     @Nullable
@@ -53,14 +54,20 @@ public class SensorService extends Service {
 
     private final ISensorServer.Stub binder = new ISensorServer.Stub() {
         @Override
-        public void setCallback(ISensorServerCallback callback){
-            clientCallbacks.add(callback);
-            Log.v("setCallback", clientCallbacks.size()+"");
+        public void setCallback(ISensorServerCallback callback, String uuid){
+            clientCallbacks.put(uuid, callback);
+            Log.v("setCallback on id:", uuid+", keys="+clientCallbacks.keySet());
         }
 
         @Override
         public float[] getRotationVec(){
             return getRotationVec();
+        }
+
+        @Override
+        public void removeCallback(ISensorServerCallback callback, String uuid) throws RemoteException {
+            clientCallbacks.remove(uuid);
+            Log.v("removeCallback", "reached service: size="+clientCallbacks.size()+", called on id:"+uuid+", keys="+clientCallbacks.keySet());
         }
     };
 
@@ -71,7 +78,7 @@ public class SensorService extends Service {
             if(event.sensor == rotationSensor){
                 sensorReadings = event.values;
                 try {
-                    for(ISensorServerCallback callback : clientCallbacks)
+                    for(ISensorServerCallback callback : clientCallbacks.values())
                         callback.onSensorReadingReceived(sensorReadings);
                         //Log.v("sending", sensorReadings[0]+","+sensorReadings[1]);
                 } catch (RemoteException e) {

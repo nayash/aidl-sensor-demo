@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.outliers.aidlserversdk.aidls.ISensorServer;
@@ -22,7 +21,7 @@ import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 
-public class MainActivity extends AppCompatActivity implements ServiceConnection {
+public class Activity2 extends AppCompatActivity implements ServiceConnection {
 
     ISensorServer sensorService;
     TextView tvReadings;
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity2);
         tvReadings = findViewById(R.id.tv_sensor_readings);
 
         handler = new InternalHandler(tvReadings);
@@ -56,12 +55,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        sensorService = ISensorServer.Stub.asInterface(service);
+        sensorService = ISensorServer.Stub.asInterface(service); // different interface
         Log.v("sensorServiceBinder", sensorService+"");
         try {
             callbackId = UUID.randomUUID().toString();
             sensorService.setCallback(callback, callbackId);
-            Log.e("MainActivity", "setcallback called: "+this);
+            Log.e("MainActivity", "setcallback called: "+callback);
         } catch (RemoteException e) {
             Log.e("clientCallbackSet", e.getMessage());
         }
@@ -79,11 +78,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         } catch (RemoteException e) {
             Log.e("onServiceDiscon", Log.getStackTraceString(e));
         }
-    }
-
-    public void goToNewClient(View v){
-        Intent intent = new Intent(this, Activity2.class);
-        startActivity(intent);
     }
 
     private static class InternalHandler extends Handler {
