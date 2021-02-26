@@ -1,5 +1,5 @@
 package com.outliers.aidlserversdk.aidls;
 
 interface ISensorServerCallback {
-    void onSensorReadingReceived(out float[] sensorReadings);
+    void onSensorReadingReceived(in float[] sensorReadings);
 }

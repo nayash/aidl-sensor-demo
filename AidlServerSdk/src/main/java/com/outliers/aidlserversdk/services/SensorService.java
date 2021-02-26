@@ -52,6 +52,7 @@ public class SensorService extends Service {
         @Override
         public void setCallback(ISensorServerCallback callback){
             clientCallback = callback;
+            Log.e("setCallback", callback+"");
         }
 
         @Override
@@ -67,8 +68,10 @@ public class SensorService extends Service {
             if(event.sensor == rotationSensor){
                 sensorReadings = event.values;
                 try {
-                    if(clientCallback != null)
+                    if(clientCallback != null) {
                         clientCallback.onSensorReadingReceived(sensorReadings);
+                        //Log.v("sending", sensorReadings[0]+","+sensorReadings[1]);
+                    }
                 } catch (RemoteException e) {
                     Log.e("serverCallbackNotif", Log.getStackTraceString(e));
                 }
