@@ -17,12 +17,14 @@ import androidx.annotation.Nullable;
 import com.outliers.aidlserversdk.aidls.ISensorServer;
 import com.outliers.aidlserversdk.aidls.ISensorServerCallback;
 
+import java.util.ArrayList;
+
 public class SensorService extends Service {
 
     Sensor rotationSensor;
     SensorListener sensorListener;
     private float[] sensorReadings;
-    ISensorServerCallback clientCallback;
+    ArrayList<ISensorServerCallback> clientCallbacks;
 
     @Override
     public void onCreate() {
@@ -35,6 +37,7 @@ public class SensorService extends Service {
         sensorListener = new SensorListener();
         sensorManager.registerListener(sensorListener, rotationSensor,
                 8000);
+        clientCallbacks = new ArrayList<>();
     }
 
     @Nullable
@@ -51,8 +54,8 @@ public class SensorService extends Service {
     private final ISensorServer.Stub binder = new ISensorServer.Stub() {
         @Override
         public void setCallback(ISensorServerCallback callback){
-            clientCallback = callback;
-            Log.e("setCallback", callback+"");
+            clientCallbacks.add(callback);
+            Log.v("setCallback", clientCallbacks.size()+"");
         }
 
         @Override
@@ -68,10 +71,9 @@ public class SensorService extends Service {
             if(event.sensor == rotationSensor){
                 sensorReadings = event.values;
                 try {
-                    if(clientCallback != null) {
-                        clientCallback.onSensorReadingReceived(sensorReadings);
+                    for(ISensorServerCallback callback : clientCallbacks)
+                        callback.onSensorReadingReceived(sensorReadings);
                         //Log.v("sending", sensorReadings[0]+","+sensorReadings[1]);
-                    }
                 } catch (RemoteException e) {
                     Log.e("serverCallbackNotif", Log.getStackTraceString(e));
                 }
