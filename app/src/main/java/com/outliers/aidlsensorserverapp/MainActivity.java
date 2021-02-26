@@ -12,8 +12,9 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.outliers.aidlsensorserverapp.client.ISensorServer;
-import com.outliers.aidlsensorserverapp.client.ISensorServerCallback;
+import com.outliers.aidlserversdk.aidls.ISensorServer;
+import com.outliers.aidlserversdk.aidls.ISensorServerCallback;
+
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection, ISensorServerCallback {
 
@@ -26,9 +27,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         setContentView(R.layout.activity_main);
         tvReadings = findViewById(R.id.tv_sensor_readings);
 
-
         Intent intent = new Intent("android.intent.action.SENSOR_SERVICE");
         intent.setPackage("com.outliers.aidlsensorserverapp");
+        //Intent intent = new Intent(this, SensorService.class);
         startService(intent);
         bindService(intent, this, Context.BIND_AUTO_CREATE);
     }
@@ -36,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         sensorService = ISensorServer.Stub.asInterface(service);
-
         try {
             sensorService.setCallback(this);
         } catch (RemoteException e) {
@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     @Override
-    public void onSensorReadingReceived(float[] sensorReadings) throws RemoteException {
-        tvReadings.setText(String.format("x={}, y={}, z={}", sensorReadings));
+    public void onSensorReadingReceived(float[] sensorReadings) {
+        tvReadings.setText(String.format("x=%.3f, y=%.3f, z=%.3f",
+                sensorReadings[0], sensorReadings[1], sensorReadings[2]));
     }
 }

@@ -50,12 +50,12 @@ public class SensorService extends Service {
 
     private final ISensorServer.Stub binder = new ISensorServer.Stub() {
         @Override
-        public void setCallback(ISensorServerCallback callback) throws RemoteException {
+        public void setCallback(ISensorServerCallback callback){
             clientCallback = callback;
         }
 
         @Override
-        public float[] getRotationVec() throws RemoteException {
+        public float[] getRotationVec(){
             return getRotationVec();
         }
     };
@@ -67,7 +67,8 @@ public class SensorService extends Service {
             if(event.sensor == rotationSensor){
                 sensorReadings = event.values;
                 try {
-                    clientCallback.onSensorReadingReceived(sensorReadings);
+                    if(clientCallback != null)
+                        clientCallback.onSensorReadingReceived(sensorReadings);
                 } catch (RemoteException e) {
                     Log.e("serverCallbackNotif", Log.getStackTraceString(e));
                 }
