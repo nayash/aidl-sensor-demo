@@ -1,7 +1,7 @@
 # aidl-sensor-demo
 This is an Android application to demonstrate how to use AIDL for inter-process communication (IPC). 
 
-This project includes an Android library with a Service ("SensorService") which is declared in the Manifest file to run in a separate process. This 
+This project includes an Android library (AidlServerSDK) with a Service ("SensorService") which is declared in the Manifest file to run in a separate process. This 
 services does a simple task of registering a sensor value change listener and notifying the client (in this case an Activity belonging to the parent application) 
 which runs in a separate process.
 
@@ -13,7 +13,9 @@ It also includes another method to read sensor value once only without setting c
 2) ISensorServerCallback: This interface is implemented by the client (here MainActivity), and its instance is passed over to ISensorServer (the service). The service
 then uses this to notify clients.
 
-Some common pitfalls:
+You will also find a way to manage multiple listeners mapping in service to notify all of them and removing the listeners when client is destroyed.
+
+Some common pitfalls to be kept in mind while working with AIDL:
 
 * The aidl files must be hosted in server and client project's "main/aidl" directory.
 * The aidl files must be hosted in exactly same package in both client and server. e.g. ProjectName/src/main/aidl/com/yourOrg/package in both client and server.
